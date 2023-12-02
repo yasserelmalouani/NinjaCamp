@@ -6,16 +6,14 @@
  */
 
 import React from 'react';
-import {SafeAreaView, Text} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import {AppNavigationContainer} from './ui/navigation/appNavigation.container';
+import {RootNavigator} from './ui/navigation/root/root.navigator';
 
 function App(): JSX.Element {
   return (
-    <NavigationContainer>
-      <SafeAreaView>
-        <Text>Welcome to NinjaCamp</Text>
-      </SafeAreaView>
-    </NavigationContainer>
+    <AppNavigationContainer>
+      <RootNavigator />
+    </AppNavigationContainer>
   );
 }
 
