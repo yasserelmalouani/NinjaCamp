@@ -5,113 +5,100 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
+  ActivityIndicator,
+  Image,
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
+  TextInput,
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Header} from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const PASSWORD_RULES = '^[A-Za-z.,\\s]*$';
+const regex = new RegExp(PASSWORD_RULES);
 
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const App: React.FC<any> = () => {
+  const [text, setText] = useState<string>();
+  const [isChecking, setIsChecking] = useState(false);
+  const [isValid, setIsValid] = useState(false);
 
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const onChangeText = useCallback((str: string) => {
+    setText(str);
+    setIsChecking(true);
+    if (str === '') {
+      setIsChecking(false);
+      setIsValid(false);
+      return;
+    }
+    setTimeout(() => {
+      const isPasswordValid = regex.test(str);
+      if (isPasswordValid) {
+        setIsValid(true);
+      } else {
+        setIsValid(false);
+      }
+      setIsChecking(false);
+    }, 2000);
+  }, []);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
+    <SafeAreaView>
+      <StatusBar />
+      <View style={styles.container}>
         <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+        <View style={styles.textInputContainer}>
+          <TextInput
+            style={styles.textInputStyle}
+            onChangeText={onChangeText}
+          />
+          {isChecking ? (
+            <ActivityIndicator size={'large'} color={'grey'} />
+          ) : null}
+          {isValid && !isChecking ? (
+            <Image
+              source={{
+                uri: 'https://cdn.pixabay.com/photo/2016/03/31/14/37/check-mark-1292787_1280.png',
+              }}
+              resizeMode={'contain'}
+              style={styles.iconSize}
+            />
+          ) : null}
+          {!isValid && !isChecking && text?.length ? (
+            <Image
+              source={{
+                uri: 'https://www.freeiconspng.com/thumbs/error-icon/error-icon-4.png',
+              }}
+              resizeMode={'contain'}
+              style={styles.iconSize}
+            />
+          ) : null}
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    paddingHorizontal: 16,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  textInputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  textInputStyle: {
+    flex: 2,
+    fontSize: 20,
+    borderWidth: 1,
+    height: 50,
   },
-  highlight: {
-    fontWeight: '700',
+  iconSize: {
+    width: 40,
+    height: 40,
   },
 });
 
