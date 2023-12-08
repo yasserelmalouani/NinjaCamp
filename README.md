@@ -1,7 +1,7 @@
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped
 using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
-# Welcome to My GitHub Playground! 🚀
+# Welcome to NinjaCamp! 🚀
 
 Explore my GitHub, where every branch is a new challenge and an opportunity for growth. From intriguing algorithms to
 cutting-edge technologies, join me on this exciting journey of continuous learning and discovery.
