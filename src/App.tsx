@@ -5,113 +5,60 @@
  * @format
  */
 
-import React, {memo} from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import React, {useMemo} from 'react';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+// => [, 1, 2, 3, 4]
+const treeHeight = Array.from({length: 5}, (_, i) => i + 1);
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-const Section = memo(({children, title}: SectionProps) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
+// => [[1],[1,2],[1,2,3],[1,2,3,4],[1,2,3,4,5]]
+const XMAS_TREE = treeHeight.map(singleRow => {
+  return Array.from({length: singleRow}, (_, i) => i + 1);
 });
-
+const XMAS_TREE_WITH_STEM = [...XMAS_TREE, ...[XMAS_TREE[0]]];
 const App: React.FC = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+  const renderXmasTree = useMemo(() => {
+    return XMAS_TREE_WITH_STEM.map((row, index) => {
+      return (
+        <View style={styles.singleRowContainer}>
+          {row.map(_ => (
+            <View
+              style={[
+                styles.singleElement,
+                index === XMAS_TREE_WITH_STEM.length - 1
+                  ? styles.stemElement
+                  : null,
+              ]}
+            />
+          ))}
         </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+      );
+    });
+  }, []);
+
+  return <SafeAreaView style={styles.container}>{renderXmasTree}</SafeAreaView>;
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  singleRowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  singleElement: {
+    width: 50,
+    height: 50,
+    borderWidth: 0.5,
+    transform: [{rotate: '45deg'}],
+    backgroundColor: 'green',
   },
-  highlight: {
-    fontWeight: '700',
+  stemElement: {
+    backgroundColor: '#662824',
+    transform: [{rotate: '90deg'}],
   },
 });
 
