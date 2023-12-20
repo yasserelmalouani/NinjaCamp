@@ -1,5 +1,12 @@
 import React from 'react';
-import {Button, SafeAreaView, StyleSheet, TextInput, View} from 'react-native';
+import {
+  Button,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 
 import {useImagesCachingHook} from './hooks/useImagesCaching.hook';
 
@@ -15,8 +22,21 @@ const App: React.FC = () => {
             style={styles.textInput}
           />
           <View style={styles.button}>
-            <Button title={'Add'} color={'white'} onPress={onAddImage} />
+            <Button
+              disabled={!imageUrl.length}
+              title={'Add'}
+              color={'white'}
+              onPress={onAddImage}
+            />
           </View>
+        </View>
+        <View style={styles.imageContainer}>
+          <Image
+            style={styles.imageStyle}
+            source={{
+              uri: 'https://images.unsplash.com/photo-1695653422676-d9dd88400e21?q=80&w=1674&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+            }}
+          />
         </View>
       </View>
     </SafeAreaView>
@@ -56,6 +76,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  imageContainer: {
+    paddingVertical: 16,
+  },
+  imageStyle: {
+    borderRadius: 10,
+    width: 120,
+    height: 120,
   },
 });
 
