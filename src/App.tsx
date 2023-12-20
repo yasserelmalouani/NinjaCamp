@@ -11,7 +11,8 @@ import {
 import {useImagesCachingHook} from './hooks/useImagesCaching.hook';
 
 const App: React.FC = () => {
-  const {imageUrl, onChangeText, onAddImage} = useImagesCachingHook();
+  const {imageUrl, onChangeText, onAddImage, cachedImages, onResetPress} =
+    useImagesCachingHook();
   return (
     <SafeAreaView style={styles.main}>
       <View style={styles.container}>
@@ -21,7 +22,7 @@ const App: React.FC = () => {
             onChangeText={onChangeText}
             style={styles.textInput}
           />
-          <View style={styles.button}>
+          <View style={styles.addButton}>
             <Button
               disabled={!imageUrl.length}
               title={'Add'}
@@ -31,13 +32,19 @@ const App: React.FC = () => {
           </View>
         </View>
         <View style={styles.imageContainer}>
-          <Image
-            style={styles.imageStyle}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1695653422676-d9dd88400e21?q=80&w=1674&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }}
-          />
+          {Object.keys(cachedImages).map(image => (
+            <Image
+              style={styles.imageStyle}
+              source={{
+                uri: cachedImages[image],
+              }}
+              resizeMode={'contain'}
+            />
+          ))}
         </View>
+      </View>
+      <View style={styles.resetButton}>
+        <Button title={'Reset'} color={'white'} onPress={onResetPress} />
       </View>
     </SafeAreaView>
   );
@@ -69,10 +76,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     borderWidth: 1,
   },
-  button: {
+  addButton: {
     flex: 2,
     marginHorizontal: 10,
     backgroundColor: '#3478f6',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  resetButton: {
+    height: 50,
+    marginHorizontal: 10,
+    backgroundColor: '#e36159',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',

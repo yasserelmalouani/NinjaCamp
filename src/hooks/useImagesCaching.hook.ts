@@ -1,4 +1,5 @@
 import {useCallback, useState} from 'react';
+import ReactNativeBlobUtil from 'react-native-blob-util';
 
 export const useImagesCachingHook = () => {
   const [imageUrl, setImageUrl] = useState('');
@@ -7,22 +8,27 @@ export const useImagesCachingHook = () => {
     setImageUrl(value);
   }, []);
 
-  const onAddImage = useCallback(() => {
+  const onAddImage = useCallback(async () => {
+    const blobImage = await ReactNativeBlobUtil.fetch('GET', imageUrl);
+    const base64Image = blobImage.base64();
     if (cachedImages[imageUrl]) {
       return;
     }
-    setCachedImages(prevState => {
-      return {
-        ...prevState,
-        [imageUrl]: imageUrl,
-      };
-    });
+    setCachedImages(prevState => ({
+      ...prevState,
+      [imageUrl]: `data:image/jpeg;base64,${base64Image}`,
+    }));
   }, [cachedImages, imageUrl]);
-  console.log('CACHED_IMAGES', cachedImages);
+
+  const onResetPress = useCallback(() => {
+    setCachedImages({});
+  }, []);
+
   return {
     imageUrl,
     onChangeText,
     onAddImage,
     cachedImages,
+    onResetPress,
   };
 };
