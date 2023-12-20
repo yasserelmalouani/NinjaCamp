@@ -9,15 +9,16 @@ export const useImagesCachingHook = () => {
   }, []);
 
   const onAddImage = useCallback(async () => {
-    const blobImage = await ReactNativeBlobUtil.fetch('GET', imageUrl);
-    const base64Image = blobImage.base64();
     if (cachedImages[imageUrl]) {
       return;
     }
+    const blobImage = await ReactNativeBlobUtil.fetch('GET', imageUrl);
+    const base64Image = blobImage.base64();
     setCachedImages(prevState => ({
       ...prevState,
       [imageUrl]: `data:image/jpeg;base64,${base64Image}`,
     }));
+    setImageUrl('');
   }, [cachedImages, imageUrl]);
 
   const onResetPress = useCallback(() => {
