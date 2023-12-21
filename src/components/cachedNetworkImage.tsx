@@ -4,25 +4,33 @@ import {fromByteArray} from 'react-native-quick-base64';
 
 interface Props {
   imageUrl: string;
-  ttl?: number;
+  ttl: number;
 }
 
-let cachedImages: Record<string, string> = {};
-const setImages = (source: string, data: string) => {
+interface ImageRecord {
+  source: string;
+  ttl: number;
+}
+
+type CachedImage = Record<string, ImageRecord>;
+
+let cachedImages: CachedImage = {};
+const setImages = (url: string, data: string, ttl: number) => {
   cachedImages = {
     ...cachedImages,
-    [source]: data,
+    [url]: {
+      ...cachedImages[url],
+      ttl,
+      source: data,
+    },
   };
 };
-const getImages = (source: string) => {
-  return cachedImages[source];
-};
 export const CachedNetworkImage = memo<Props>(({imageUrl, ttl}) => {
-  const [localCache, setLocalCache] = useState<Record<string, string>>({});
+  const [localCache, setLocalCache] = useState<CachedImage>({});
   const [isLoading, setIsLoading] = useState(false);
   const onLoad = useCallback(async () => {
     try {
-      if (getImages(imageUrl)) {
+      if (cachedImages[imageUrl]?.source) {
         return;
       }
       setIsLoading(true);
@@ -32,17 +40,21 @@ export const CachedNetworkImage = memo<Props>(({imageUrl, ttl}) => {
       }
       const arrayBuffer = await response.arrayBuffer();
       const base64 = fromByteArray(new Uint8Array(arrayBuffer));
-      setImages(imageUrl, 'data:image/jpeg;base64,' + base64);
+      setImages(imageUrl, 'data:image/jpeg;base64,' + base64, ttl);
 
       setLocalCache({
         ...localCache,
-        [imageUrl]: 'data:image/jpeg;base64,' + base64,
+        [imageUrl]: {
+          ...localCache[imageUrl],
+          ttl,
+          source: imageUrl,
+        },
       });
       setIsLoading(false);
     } catch (error) {
       console.error(`Error loading image: ${imageUrl}`, error);
     }
-  }, [imageUrl, localCache]);
+  }, [imageUrl, localCache, ttl]);
 
   console.log('IMMAGG cachedImages', cachedImages);
 
@@ -58,7 +70,7 @@ export const CachedNetworkImage = memo<Props>(({imageUrl, ttl}) => {
         <Image
           style={styles.imageStyle}
           source={{
-            uri: cachedImages[imageUrl],
+            uri: cachedImages[imageUrl]?.source ?? imageUrl,
           }}
           resizeMode={'contain'}
         />

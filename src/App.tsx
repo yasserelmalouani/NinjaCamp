@@ -24,7 +24,7 @@ const App: React.FC = () => {
           />
         </View>
         <View style={styles.imageContainer}>
-          <CachedNetworkImage imageUrl={images[index]} />
+          <CachedNetworkImage imageUrl={images[index]} ttl={10000} />
         </View>
       </View>
       <View style={styles.resetButton}>
