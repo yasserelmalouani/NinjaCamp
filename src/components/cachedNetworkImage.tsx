@@ -62,10 +62,25 @@ export const CachedNetworkImage = memo<Props>(({imageUrl, ttl}) => {
     onLoad().then();
   }, [onLoad]);
 
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      delete cachedImages[imageUrl];
+
+      setLocalCache(prevCache => {
+        const {[imageUrl]: removedImage, ...newCache} = prevCache;
+        return newCache;
+      });
+    }, cachedImages[imageUrl]?.ttl ?? ttl);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [imageUrl, ttl]);
+
   return (
     <View style={styles.imageContainer}>
       {isLoading ? (
-        <ActivityIndicator />
+        <ActivityIndicator size={'large'} color={'blue'} />
       ) : (
         <Image
           style={styles.imageStyle}
